@@ -3,7 +3,7 @@ import html2canvas from 'html2canvas';
 import Tesseract from 'tesseract.js';
 import showdown from 'showdown';
 import DOMPurify from 'dompurify';
-
+import './content.css'
 
 const converter = new showdown.Converter();
 
@@ -137,29 +137,88 @@ const handleMouseUp = async () => {
 // Function to display the answer in a container on the page
 const displayAnswerContainer = (answer) => {
     const container = document.createElement('div');
-    container.style.position = 'fixed';
-    container.style.bottom = '20px';
-    container.style.right = '20px';
-    container.style.padding = '10px';
-    container.style.backgroundColor = '#fff';
-    container.style.border = '1px solid #ccc';
-    container.style.boxShadow = '0px 0px 10px rgba(0,0,0,0.1)';
-    container.style.zIndex = '10000';
-    container.style.maxWidth = '400px';
-    container.style.overflowY = 'auto';
+    container.className = 'answer-container';
+
+    const content = document.createElement('div');
+    content.className = 'answer-content';
+
+    const closeButton = document.createElement('button');
+    closeButton.className = 'close-button';
+    closeButton.innerHTML = '&times;';
+    closeButton.setAttribute('aria-label', 'Close');
+
+    const copyButton = document.createElement('button');
+    copyButton.className = 'copy-button';
+    copyButton.textContent = 'Copy';
+    copyButton.setAttribute('aria-label', 'Copy to clipboard');
+
+    const copyTooltip = document.createElement('div');
+    copyTooltip.className = 'copy-tooltip';
+    copyTooltip.textContent = 'Copied!';
 
     const markdownToHTML = converter.makeHtml(answer);
-
-    // Sanitize the generated HTML using DOMPurify to prevent XSS
     const sanitizedHTML = DOMPurify.sanitize(markdownToHTML);
 
-    container.innerHTML = `Answer: ${sanitizedHTML}`;
+    // Create floating bubbles
+    for (let i = 0; i < 5; i++) {
+        const bubble = document.createElement('div');
+        bubble.className = 'floating-bubble';
+        bubble.style.width = `${Math.random() * 20 + 10}px`;
+        bubble.style.height = bubble.style.width;
+        bubble.style.left = `${Math.random() * 100}%`;
+        bubble.style.top = `${Math.random() * 100}%`;
+        bubble.style.animationDelay = `${Math.random() * 2}s`;
+        container.appendChild(bubble);
+    }
+
+    content.innerHTML = sanitizedHTML;
+
+    container.appendChild(closeButton);
+    container.appendChild(copyButton);
+    container.appendChild(copyTooltip);
+    container.appendChild(content);
 
     document.body.appendChild(container);
 
+    // Typewriter effect
+    const text = content.textContent;
+    content.textContent = '';
+    let i = 0;
+    const typeWriter = () => {
+        if (i < text.length) {
+            content.textContent += text.charAt(i);
+            i++;
+            setTimeout(typeWriter, 20);
+        }
+    };
+    typeWriter();
+
+    closeButton.addEventListener('click', () => {
+        container.classList.add('closing');
+        setTimeout(() => {
+            if (document.body.contains(container)) {
+                document.body.removeChild(container);
+            }
+        }, 500);
+    });
+
+    copyButton.addEventListener('click', () => {
+        navigator.clipboard.writeText(text).then(() => {
+            copyTooltip.classList.add('visible');
+            setTimeout(() => {
+                copyTooltip.classList.remove('visible');
+            }, 2000);
+        });
+    });
+
     setTimeout(() => {
         if (document.body.contains(container)) {
-            document.body.removeChild(container);
+            container.classList.add('closing');
+            setTimeout(() => {
+                if (document.body.contains(container)) {
+                    document.body.removeChild(container);
+                }
+            }, 500);
         }
     }, 10000);
 };
