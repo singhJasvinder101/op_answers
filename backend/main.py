@@ -3,7 +3,9 @@ from flask import Flask, request, jsonify
 import os
 import google.generativeai as genai
 from flask_cors import CORS
+from dotenv import load_dotenv  # Import dotenv
 
+load_dotenv()
 app = Flask(__name__)
 
 CORS(app, resources={r"/*": {"origins": "*"}})
