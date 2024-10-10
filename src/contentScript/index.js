@@ -114,7 +114,7 @@ const handleMouseUp = async () => {
         });
 
         chrome.runtime.sendMessage({ action: 'OCR_RESULT', text });
-        const response = await fetch('http://127.0.0.1:5000/generate_answer', {
+        const response = await fetch('https://op-answers.vercel.app/generate_answer', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
