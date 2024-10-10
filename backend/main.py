@@ -26,7 +26,7 @@ def generate_answer():
     if not question:
         return jsonify({ 'error': 'No question provided' }), 400
 
-    prompt_template = f"Answer the question below. It may involve logic, factual data, or mathematical computations, so solve carefully and provide the correct answer. If it is a multiple-choice question, return the correct option in the format A/B/C/D - Text of the correct option. Keep the response to the point without unnecessary detail:\n{question}"
+    prompt_template = f"Question: {question}\nAnswer: A/B/C/D/E - Text of correct option:"
 
     generation_config = genai.types.GenerationConfig(
         top_p = 0.95,
