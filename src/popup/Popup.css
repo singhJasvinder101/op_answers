@@ -1,129 +1,190 @@
-/* Popup.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
 :root {
-  --primary-color: #3498db;
-  --secondary-color: #2980b9;
-  --background-color: #f5f7fa;
-  --text-color: #333;
-  --border-color: #e0e0e0;
+  --primary-color: #6c5ce7;
+  --secondary-color: #a29bfe;
+  --background-color: #ffffff;
+  --text-color: #2d3436;
+  --border-color: #dfe6e9;
   --shadow-color: rgba(0, 0, 0, 0.1);
+  --hover-color: #f0f0f0;
 }
 
 .dark-mode {
-  --primary-color: #3498db;
-  --secondary-color: #2980b9;
-  --background-color: #2c3e50;
-  --text-color: #ecf0f1;
-  --border-color: #34495e;
-  --shadow-color: rgba(0, 0, 0, 0.2);
+  --primary-color: #a29bfe;
+  --secondary-color: #6c5ce7;
+  --background-color: #2d3436;
+  --text-color: #dfe6e9;
+  --border-color: #636e72;
+  --shadow-color: rgba(255, 255, 255, 0.1);
+  --hover-color: #34495e;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeOut {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(20px);
-  }
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(20px); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
 }
 
 body {
-  width: 300px;
+  width: 350px;
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: 'Poppins', sans-serif;
   background-color: var(--background-color);
   color: var(--text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .popup-container {
-  animation: fadeIn 0.3s ease-out;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  box-shadow: 0 4px 6px var(--shadow-color);
+  animation: fadeIn 0.5s ease-out;
+  background-color: var(--background-color);
+  box-shadow: 0 10px 20px var(--shadow-color);
+  border-radius: 20px;
   overflow: hidden;
-  padding: 20px;
+  padding: 24px;
 }
 
 .popup-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .popup-header h1 {
-  font-size: 24px;
-  font-family: ui-rounded, 'Hiragino Maru Gothic ProN', Quicksand, Comfortaa, Manjari, 'Arial Rounded MT', 'Arial Rounded MT Bold', Calibri, source-sans-pro, sans-serif;
-  font-weight: normal;
+  font-size: 28px;
+  font-weight: 600;
   margin: 0;
   color: var(--primary-color);
+  text-shadow: 2px 2px 4px var(--shadow-color);
 }
 
 .theme-toggle {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 5px;
-  transition: background-color 0.3s ease;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  color: var(--text-color);
 }
 
 .theme-toggle:hover {
-  background-color: var(--border-color);
-}
-
-.theme-toggle:focus {
-  outline: 2px solid var(--primary-color);
-  outline-offset: 2px;
+  background-color: var(--hover-color);
+  transform: scale(1.1);
 }
 
 .popup-content {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 }
 
-.start-ocr-button {
+.input-container {
+  display: flex;
+  gap: 12px;
+}
+
+input[type="text"] {
+  flex-grow: 1;
+  padding: 12px 16px;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 16px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--secondary-color);
+}
+
+.icon-button {
   background-color: var(--primary-color);
   color: white;
   border: none;
-  border-radius: 6px;
-  padding: 10px 15px;
-  font-size: 16px;
+  border-radius: 12px;
+  padding: 12px;
   cursor: pointer;
-  font-family: ui-rounded, 'Hiragino Maru Gothic ProN', Quicksand, Comfortaa, Manjari, 'Arial Rounded MT', 'Arial Rounded MT Bold', Calibri, source-sans-pro, sans-serif;
-  font-weight: normal;
-  transition: background-color 0.3s ease, transform 0.1s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.icon-button:hover {
+  background-color: var(--secondary-color);
+  transform: translateY(-2px);
+}
+
+.icon-button:active {
+  transform: translateY(0);
+}
+
+.icon-button.submitting {
+  animation: pulse 1s infinite;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+}
+
+.start-ocr-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 18px;
+  width: 100% !important;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
 }
 
 .start-ocr-button:hover {
   background-color: var(--secondary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px var(--shadow-color);
 }
 
 .start-ocr-button:active {
-  transform: scale(0.98);
+  transform: translateY(0);
 }
 
-.start-ocr-button:focus {
-  outline: 2px solid var(--secondary-color);
-  outline-offset: 2px;
+.start-ocr-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.start-ocr-button.scanning {
+  animation: pulse 1s infinite;
 }
 
 .progress-bar-container {
   background-color: var(--border-color);
   border-radius: 10px;
-  height: 10px;
+  height: 8px;
   overflow: hidden;
 }
 
@@ -134,24 +195,34 @@ body {
 }
 
 .ocr-result {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  padding: 10px;
+  background-color: var(--hover-color);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px var(--shadow-color);
 }
 
 .ocr-result h2 {
-  font-size: 18px;
+  font-size: 20px;
   margin-top: 0;
+  margin-bottom: 12px;
   color: var(--primary-color);
 }
 
 .ocr-result p {
   margin: 0;
-  font-size: 14px;
-  line-height: 1.4;
+  font-size: 16px;
+  line-height: 1.6;
 }
 
-@media (max-width: 320px) {
+.popup-container.closing {
+  animation: fadeOut 0.5s ease-in forwards;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@media (max-width: 400px) {
   body {
     width: 100%;
   }
@@ -159,8 +230,4 @@ body {
   .popup-container {
     border-radius: 0;
   }
-}
-
-.popup-container.closing {
-  animation: fadeOut 0.3s ease-in forwards;
 }

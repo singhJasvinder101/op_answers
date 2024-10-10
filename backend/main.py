@@ -36,7 +36,7 @@ def generate_answer():
 
     If you have even a little doubt then please tell but don't give wrong answers pleasee !! recheck your answer, all calculations and all formulas thrice before giving correct answer
 
-    Now return the answer in format: correct option with *text of answer of only 1 line*  if MCQ else small and to the point *text of answer of only 1 line* in both cases answers and Rate the difficult level of question
+    Now return the answer in format: correct option and Rate the difficult level of question in next line then in next line *text of answer of only 1 line not more then 1 line even for explanation also*  if MCQ else small and to the point *text of answer of only 1 line* in both cases answers
     Question: {question}"""
 
 

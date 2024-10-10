@@ -18,6 +18,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === 'START_OCR') {
         console.log("starting OCR selection");
         handleStartSelection();
+    } else if (message.action === 'SHOW_ANSWER') {
+        const { answer } = message;
+        displayAnswerContainer(answer);
     }
 });
 
