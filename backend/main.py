@@ -26,24 +26,13 @@ def generate_answer():
     if not question:
         return jsonify({ 'error': 'No question provided' }), 400
 
-    prompt_template = f"""You are the most most intelligent human computer in the world who can solve very advance mathematical questions. so you will be given very important tasks to help the student in their tests and carefully answer all you can take your time because precision to answer matters alot
-
-    Questions can belong to these topics English, Regional Language(s), Maths, Science, Social Sciences, Physical Education, Computer Basics, Arts, Electronics
-    
-    Solve the question carefully. The question may involve logical reasoning, factual data, or mathematical calculations, so ensure the answer is accurate. Also properly analyze the options
-
-    For multiple-choice questions, return the correct option and remember answer must match from options only (for MCQ's) don't create your own new options
-
-    If you have even a little doubt then please tell but don't give wrong answers pleasee !! recheck your answer, all calculations and all formulas thrice before giving correct answer
-
-    Now return the answer in format: correct option with *text of answer of only 1 line*  if MCQ else small and to the point *text of answer of only 1 line* in both cases answers and Rate the difficult level of question
-    Question: {question}"""
+    prompt_template = f"Answer the question below. It may involve logic, factual data, or mathematical computations, so solve carefully and provide the correct answer. If it is a multiple-choice question, return the correct option in the format A/B/C/D - Text of the correct option. Keep the response to the point without unnecessary detail:\n{question}"
 
     generation_config = genai.types.GenerationConfig(
-        top_p=0.95,  # required probability
-        top_k=64,  
-        temperature=1,  
-        max_output_tokens=8192  
+        top_p = 0.95,
+        top_k = 64,
+        temperature = 1,
+        max_output_tokens = 8192
     )
 
     response = model.generate_content(
