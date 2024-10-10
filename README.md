@@ -1,4 +1,4 @@
-# ocr_text
+# Homework AI
 
 > a chrome extension tools built with Vite + React, and Manifest v3
 
@@ -13,7 +13,7 @@
 run the command
 
 ```shell
-$ cd ocr_text
+$ cd Homework AI
 
 $ npm run dev
 ```
@@ -21,7 +21,7 @@ $ npm run dev
 ### Chrome Extension Developer Mode
 
 1. set your Chrome browser 'Developer mode' up
-2. click 'Load unpacked', and select `ocr_text/build` folder
+2. click 'Load unpacked', and select `Homework AI/build` folder
 
 ### Nomal FrontEnd Developer Mode
 

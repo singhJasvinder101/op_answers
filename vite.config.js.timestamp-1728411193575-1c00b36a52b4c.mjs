@@ -1,15 +1,15 @@
 // vite.config.js
-import { defineConfig } from "file:///D:/chrome%20extensions/ocr_text/node_modules/vite/dist/node/index.js";
-import { crx } from "file:///D:/chrome%20extensions/ocr_text/node_modules/@crxjs/vite-plugin/dist/index.mjs";
-import react from "file:///D:/chrome%20extensions/ocr_text/node_modules/@vitejs/plugin-react/dist/index.mjs";
+import { defineConfig } from "file:///D:/chrome%20extensions/Homework AI/node_modules/vite/dist/node/index.js";
+import { crx } from "file:///D:/chrome%20extensions/Homework AI/node_modules/@crxjs/vite-plugin/dist/index.mjs";
+import react from "file:///D:/chrome%20extensions/Homework AI/node_modules/@vitejs/plugin-react/dist/index.mjs";
 
 // src/manifest.js
-import { defineManifest } from "file:///D:/chrome%20extensions/ocr_text/node_modules/@crxjs/vite-plugin/dist/index.mjs";
+import { defineManifest } from "file:///D:/chrome%20extensions/Homework AI/node_modules/@crxjs/vite-plugin/dist/index.mjs";
 
 // package.json
 var package_default = {
-  name: "ocr_text",
-  displayName: "ocr_text",
+  name: "Homework AI",
+  displayName: "Homework AI",
   version: "0.0.0",
   author: "no one",
   description: "",

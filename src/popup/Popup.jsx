@@ -65,7 +65,7 @@ export const Popup = () => {
   return (
     <div className={`popup-container ${darkMode ? 'dark-mode' : ''} ${isClosing ? 'closing' : ''}`}>
       <header className="popup-header">
-        <h1>OCR Extension</h1>
+        <h1>Homework AI</h1>
         {/* <button
           className="theme-toggle"
           onClick={() => setDarkMode(!darkMode)}
@@ -76,7 +76,7 @@ export const Popup = () => {
       </header>
       <main className="popup-content">
         <button className="start-ocr-button" onClick={handleStartOCR}>
-          Start OCR Selection
+          Let's Go !!
         </button>
         {ocrProgress > 0 && ocrProgress < 100 && (
           <div className="progress-bar-container">

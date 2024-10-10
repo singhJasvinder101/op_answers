@@ -26,10 +26,13 @@ const handleStartSelection = () => {
     selectionBox = { x: 0, y: 0, width: 0, height: 0 };
 
     const overlay = document.createElement('div');
+    overlay.className = 'ocr-overlay';
     overlay.style.position = 'fixed';
     overlay.style.inset = '0';
     overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-    overlay.style.cursor = 'crosshair';
+    overlay.style.cursor = 'pointer';
+    console.log(chrome.runtime.getURL('img/pointer.png'));
+    console.log("url('img/pointer.png') 0 0, crosshair");
     overlay.style.zIndex = '9999';
     document.body.appendChild(overlay);
 
@@ -81,7 +84,7 @@ const handleMouseUp = async () => {
     isSelecting = false;
 
     // Remove overlay and selection element
-    const overlay = document.querySelector('div[style*="cursor: crosshair"]');
+    const overlay = document.querySelector('div[style*="cursor: pointer"]');
     if (overlay) {
         overlay.removeEventListener('mousedown', handleMouseDown);
         overlay.removeEventListener('mousemove', handleMouseMove);

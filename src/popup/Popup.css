@@ -51,7 +51,6 @@ body {
 .popup-container {
   animation: fadeIn 0.3s ease-out;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  border-radius: 3rem!important;
   box-shadow: 0 4px 6px var(--shadow-color);
   overflow: hidden;
   padding: 20px;
@@ -66,6 +65,8 @@ body {
 
 .popup-header h1 {
   font-size: 24px;
+  font-family: ui-rounded, 'Hiragino Maru Gothic ProN', Quicksand, Comfortaa, Manjari, 'Arial Rounded MT', 'Arial Rounded MT Bold', Calibri, source-sans-pro, sans-serif;
+  font-weight: normal;
   margin: 0;
   color: var(--primary-color);
 }
@@ -75,7 +76,6 @@ body {
   border: none;
   cursor: pointer;
   padding: 5px;
-  border-radius: 50%;
   transition: background-color 0.3s ease;
 }
 
@@ -102,6 +102,8 @@ body {
   padding: 10px 15px;
   font-size: 16px;
   cursor: pointer;
+  font-family: ui-rounded, 'Hiragino Maru Gothic ProN', Quicksand, Comfortaa, Manjari, 'Arial Rounded MT', 'Arial Rounded MT Bold', Calibri, source-sans-pro, sans-serif;
+  font-weight: normal;
   transition: background-color 0.3s ease, transform 0.1s ease;
 }
 
