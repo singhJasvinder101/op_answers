@@ -26,24 +26,23 @@ def generate_answer():
     if not question:
         return jsonify({ 'error': 'No question provided' }), 400
 
-    prompt_template = f"""You are the most most intelligent human computer in the world who can solve very advance mathematical questions. so you will be given very important tasks to help the student in their tests and carefully answer all you can take your time because precision to answer matters alot
-
-    Questions can belong to these topics English, Regional Language(s), Maths, Science, Social Sciences, Physical Education, Computer Basics, Arts, Electronics
+    prompt_template = f"""
+    Ensure that every answers to my questions come from reputable sources and always include citations and links to the sources for information.
     
-    Solve the question carefully. The question may involve logical reasoning, factual data, or mathematical calculations, so ensure the answer is accurate. Also properly analyze the options
+    If the questions include good mathematical questions do solve them by yourself and revise your answer 4 times before submitting.
+    
+    If question include factual question carefully check the answer from all sources and return most accurate answer also check your answer and verify with question atleast 3-4 times
 
-    For multiple-choice questions, return the correct option and remember answer must match from options only (for MCQ's) don't create your own new options
-
-    If you have even a little doubt then please tell but don't give wrong answers pleasee !! recheck your answer, all calculations and all formulas thrice before giving correct answer
-
-    Now return the answer in format: correct option and Rate the difficult level of question in next line then in next line *text of answer of only 1 line not more then 1 line even for explanation also*  if MCQ else small and to the point *text of answer of only 1 line* in both cases answers
+    Do not give me explanation of the answer Just write the correct answer.
+    
+    In next line rate the level of question as level:
     Question: {question}"""
 
 
     generation_config = genai.types.GenerationConfig(
-        top_p=0.95,  # required probability
+      top_p=0.95,  # required probability
       top_k=64,   
-      temperature=1, 
+      temperature=0.85, 
       max_output_tokens=8192  
     )
 

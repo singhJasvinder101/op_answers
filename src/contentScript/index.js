@@ -1,48 +1,164 @@
-console.info('contentScript is running');
+console.info('Content script is running');
 import html2canvas from 'html2canvas';
 import Tesseract from 'tesseract.js';
-import showdown from 'showdown';
-import DOMPurify from 'dompurify';
-import './content.css'
+import './content.css';
+import '../components/AnswerPopup/index.css';
 
-const converter = new showdown.Converter();
+const apiUri = 'http://127.0.0.1:5000/generate_answer'; 
+let popupContainer = null;
+
+let isScanning = false;
+let isSubmitting = false; 
+let ocrProgress = 0; 
+let question = ''; 
+let ocrResult = ''; 
+let isRendered = false;
 
 
+const createElement = (tag, className, content = '') => {
+    const element = document.createElement(tag);
+    if (className) element.className = className;
+    if (content) element.innerHTML = content;
+    return element;
+};
+
+const renderPopup = (position, ocrResult = '', isSubmitting = false, isScanning = false, ocrProgress = 0) => {
+    if (!popupContainer) return;
+    isRendered = true;
+
+    console.log("Rendering popup...");
+    popupContainer.innerHTML = '';
+
+    const header = createElement('header', 'popup-header', '<h1>Homework AI</h1>');
+    const main = createElement('main', 'popup-content');
+
+    const inputContainer = createElement('div', 'input-container');
+    const input = createElement('input', 'inp', '');
+    input.placeholder = 'Enter your question';
+
+    input.addEventListener('input', (e) => {
+        question = e.target.value;
+    });
+
+    const submitButton = createElement('button', 'icon-button', isSubmitting ? 'Submitting...' : 'Submit');
+    submitButton.disabled = isSubmitting;
+    submitButton.addEventListener('click', handleSubmitQuestion);
+
+    inputContainer.appendChild(input);
+    inputContainer.appendChild(submitButton);
+
+    const ocrButton = createElement('button', 'start-ocr-button', isScanning ? 'Scanning...' : 'Scan');
+    ocrButton.disabled = isScanning;
+    ocrButton.addEventListener('click', handleStartOCR);
+
+    main.appendChild(header);
+    main.appendChild(inputContainer);
+    main.appendChild(ocrButton);
+
+    const progressBarContainer = createElement('div', 'progress-bar-container');
+    const progressBar = createElement('div', 'progress-bar');
+    progressBar.style.width = `${ocrProgress}%`;
+    progressBarContainer.appendChild(progressBar);
+    main.appendChild(progressBarContainer);
+
+    if (ocrResult) {
+        const resultDiv = createElement('div', 'ocr-result', `<h2>Scanned Text:</h2><p>${ocrResult}</p>`);
+        main.appendChild(resultDiv);
+    }
+
+    popupContainer.appendChild(main);
+};
+
+const handleStartOCR = () => {
+    ocrProgress = 0;
+
+    chrome.runtime.sendMessage({ action: "START_OCR" });
+};
+
+const handleSubmitQuestion = async () => {
+    isSubmitting = true;
+    renderPopup(null, ocrResult, isSubmitting, isScanning, ocrProgress); // Update the UI to reflect submission status
+
+    try {
+        const response = await fetch(apiUri, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ question }),
+        });
+
+        const data = await response.json();
+        const answer = data.answer || 'No answer found.';
+        ocrResult = answer;
+
+        chrome.runtime.sendMessage({ action: 'SHOW_ANSWER', answer });
+
+        question = '';
+    } catch (error) {
+        console.error("Error submitting question:", error);
+    } finally {
+        isSubmitting = false;
+        renderPopup(null, ocrResult, isSubmitting, isScanning, ocrProgress); // Update the UI after submission completes
+    }
+};
+
+
+const createPopupContainer = (position) => {
+
+    if (popupContainer) {
+        // Removing the previous popup if it exists
+        document.body.removeChild(popupContainer);
+    }
+
+    console.log(position)
+    const correctedX = position.x + window.scrollX;
+    const correctedY = position.y + window.scrollY - 150;
+
+    popupContainer = document.createElement('div');
+    popupContainer.id = 'popup-container';
+    popupContainer.style.position = 'absolute';
+    popupContainer.style.top = `${correctedY}px`;
+    popupContainer.style.left = `${correctedX}px`;
+    popupContainer.style.height = `100px`;
+    popupContainer.style.zIndex = 1000000000;
+    popupContainer.style.width = `300px`;
+    document.body.appendChild(popupContainer);
+};
+
+
+// Selection Overlay logic
 let isSelecting = false;
 let startPoint = { x: 0, y: 0 };
 let selectionBox = { x: 0, y: 0, width: 0, height: 0 };
 let selectionElement = null;
 
-
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message) => {
     if (message.action === 'START_OCR') {
-        console.log("starting OCR selection");
+        console.log("ïncoming")
         handleStartSelection();
     } else if (message.action === 'SHOW_ANSWER') {
         const { answer } = message;
         displayAnswerContainer(answer);
+    } else if (message.action === 'OCR_PROGRESS') {
+        isScanning = true;
     }
 });
 
+// Handling selection for OCR
 const handleStartSelection = () => {
     isSelecting = true;
     selectionBox = { x: 0, y: 0, width: 0, height: 0 };
 
-    const overlay = document.createElement('div');
-    overlay.className = 'ocr-overlay';
+    const overlay = createElement('div', 'ocr-overlay');
     overlay.style.position = 'fixed';
     overlay.style.inset = '0';
     overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-    overlay.style.cursor = 'pointer';
-    console.log(chrome.runtime.getURL('img/pointer.png'));
-    console.log("url('img/pointer.png') 0 0, crosshair");
+    overlay.style.cursor = 'crosshair';
     overlay.style.zIndex = '9999';
     document.body.appendChild(overlay);
 
-    selectionElement = document.createElement('div');
+    selectionElement = createElement('div', 'selection-box');
     selectionElement.style.position = 'fixed';
     selectionElement.style.border = '2px dashed white';
-    selectionElement.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
     selectionElement.style.pointerEvents = 'none';
     selectionElement.style.zIndex = '10000';
     document.body.appendChild(selectionElement);
@@ -52,23 +168,21 @@ const handleStartSelection = () => {
     overlay.addEventListener('mouseup', handleMouseUp);
 };
 
+// Mouse event handlers for selection
 const handleMouseDown = (e) => {
     if (!isSelecting) return;
-    const { clientX, clientY } = e;
-    startPoint = { x: clientX, y: clientY };
-    selectionBox = { x: clientX, y: clientY, width: 0, height: 0 };
+    startPoint = { x: e.clientX, y: e.clientY };
+    selectionBox = { x: startPoint.x, y: startPoint.y, width: 0, height: 0 };
     updateSelectionElement();
 };
 
 const handleMouseMove = (e) => {
     if (!isSelecting || e.buttons !== 1) return;
-    const { clientX, clientY } = e;
-
     selectionBox = {
-        x: Math.min(startPoint.x, clientX),
-        y: Math.min(startPoint.y, clientY),
-        width: Math.abs(clientX - startPoint.x),
-        height: Math.abs(clientY - startPoint.y),
+        x: Math.min(startPoint.x, e.clientX),
+        y: Math.min(startPoint.y, e.clientY),
+        width: Math.abs(e.clientX - startPoint.x),
+        height: Math.abs(e.clientY - startPoint.y),
     };
     updateSelectionElement();
 };
@@ -82,17 +196,16 @@ const updateSelectionElement = () => {
     }
 };
 
-const handleMouseUp = async () => {
+const handleMouseUp = async (e) => {
     if (!isSelecting) return;
     isSelecting = false;
 
-    // Remove overlay and selection element
-    const overlay = document.querySelector('div[style*="cursor: pointer"]');
+    const popupPosition = { x: e.clientX, y: e.clientY };
+
+    const overlay = document.querySelector('.ocr-overlay');
     if (overlay) {
-        overlay.removeEventListener('mousedown', handleMouseDown);
-        overlay.removeEventListener('mousemove', handleMouseMove);
-        overlay.removeEventListener('mouseup', handleMouseUp);
         document.body.removeChild(overlay);
+        createPopupContainer(popupPosition);
     }
     if (selectionElement) {
         document.body.removeChild(selectionElement);
@@ -100,8 +213,6 @@ const handleMouseUp = async () => {
     }
 
     try {
-        chrome.runtime.sendMessage({ action: 'OCR_STARTED' });
-
         const canvas = await html2canvas(document.body, {
             x: selectionBox.x,
             y: selectionBox.y,
@@ -112,7 +223,7 @@ const handleMouseUp = async () => {
         });
 
         const { data: { text } } = await Tesseract.recognize(canvas.toDataURL(), 'eng', {
-            logger: m => {
+            logger: (m) => {
                 if (m.status === 'recognizing text') {
                     chrome.runtime.sendMessage({ action: 'OCR_PROGRESS', progress: m.progress });
                 }
@@ -120,19 +231,15 @@ const handleMouseUp = async () => {
         });
 
         chrome.runtime.sendMessage({ action: 'OCR_RESULT', text });
-        const response = await fetch('https://op-answers.vercel.app/generate_answer', {
+        const response = await fetch(apiUri, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ question: text }),
         });
 
         const data = await response.json();
         const answer = data.answer || 'No answer found.';
-
-        console.log(answer)
-        displayAnswerContainer(answer);
+        displayAnswerContainer(answer, popupPosition);
 
     } catch (error) {
         console.error('Error during OCR:', error);
@@ -140,91 +247,6 @@ const handleMouseUp = async () => {
     }
 };
 
-// Function to display the answer in a container on the page
-const displayAnswerContainer = (answer) => {
-    const container = document.createElement('div');
-    container.className = 'answer-container';
-
-    const content = document.createElement('div');
-    content.className = 'answer-content';
-
-    const closeButton = document.createElement('button');
-    closeButton.className = 'close-button';
-    closeButton.innerHTML = '&times;';
-    closeButton.setAttribute('aria-label', 'Close');
-
-    const copyButton = document.createElement('button');
-    copyButton.className = 'copy-button';
-    copyButton.textContent = 'Copy';
-    copyButton.setAttribute('aria-label', 'Copy to clipboard');
-
-    const copyTooltip = document.createElement('div');
-    copyTooltip.className = 'copy-tooltip';
-    copyTooltip.textContent = 'Copied!';
-
-    const markdownToHTML = converter.makeHtml(answer);
-    const sanitizedHTML = DOMPurify.sanitize(markdownToHTML);
-
-    // Create floating bubbles
-    for (let i = 0; i < 5; i++) {
-        const bubble = document.createElement('div');
-        bubble.className = 'floating-bubble';
-        bubble.style.width = `${Math.random() * 20 + 10}px`;
-        bubble.style.height = bubble.style.width;
-        bubble.style.left = `${Math.random() * 100}%`;
-        bubble.style.top = `${Math.random() * 100}%`;
-        bubble.style.animationDelay = `${Math.random() * 2}s`;
-        container.appendChild(bubble);
-    }
-
-    content.innerHTML = sanitizedHTML;
-
-    container.appendChild(closeButton);
-    container.appendChild(copyButton);
-    container.appendChild(copyTooltip);
-    container.appendChild(content);
-
-    document.body.appendChild(container);
-
-    // Typewriter effect
-    const text = content.textContent;
-    content.textContent = '';
-    let i = 0;
-    const typeWriter = () => {
-        if (i < text.length) {
-            content.textContent += text.charAt(i);
-            i++;
-            setTimeout(typeWriter, 20);
-        }
-    };
-    typeWriter();
-
-    closeButton.addEventListener('click', () => {
-        container.classList.add('closing');
-        setTimeout(() => {
-            if (document.body.contains(container)) {
-                document.body.removeChild(container);
-            }
-        }, 500);
-    });
-
-    copyButton.addEventListener('click', () => {
-        navigator.clipboard.writeText(text).then(() => {
-            copyTooltip.classList.add('visible');
-            setTimeout(() => {
-                copyTooltip.classList.remove('visible');
-            }, 2000);
-        });
-    });
-
-    setTimeout(() => {
-        if (document.body.contains(container)) {
-            container.classList.add('closing');
-            setTimeout(() => {
-                if (document.body.contains(container)) {
-                    document.body.removeChild(container);
-                }
-            }, 500);
-        }
-    }, 10000);
+const displayAnswerContainer = (answer, position) => {
+    renderPopup(position, answer);
 };

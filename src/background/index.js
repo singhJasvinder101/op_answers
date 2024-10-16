@@ -7,6 +7,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
+
+// from popup
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'OCR_STARTED') {
     chrome.action.setBadgeBackgroundColor({ color: '#FFD700' }); 
@@ -22,3 +24,22 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     chrome.action.setBadgeText({ text: 'ERR' });
   }
 });
+
+
+// from contentscript 
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "START_OCR") {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0].id) {
+        chrome.tabs.sendMessage(tabs[0].id, { action: "START_OCR" });
+      }
+    });
+  } else if (message.action === "SHOW_ANSWER") {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0].id) {
+        chrome.tabs.sendMessage(tabs[0].id, { action: "SHOW_ANSWER", answer: ocrResult });
+      }
+    });
+  }
+});
+

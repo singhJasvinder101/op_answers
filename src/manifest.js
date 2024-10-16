@@ -35,7 +35,7 @@ export default defineManifest({
   },
   web_accessible_resources: [
     {
-      resources: ['img/logo-16.png', 'img/logo-34.png', 'img/logo-48.png', 'img/logo-128.png', 'img/pointer.png'],
+      resources: ['img/logo-16.png', 'img/logo-34.png', 'img/logo-48.png', 'img/logo-128.png', 'img/pointer.png', "answerpopup.html"],
       matches: [],
     },
   ],

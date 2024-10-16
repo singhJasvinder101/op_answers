@@ -11,6 +11,10 @@ export const Popup = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+
+  // const apiUri = 'https://op-answers.vercel.app/generate_answer'
+  const apiUri = 'http://127.0.0.1:5000/generate_answer'
+
   useEffect(() => {
     chrome.storage.sync.get('darkMode', (data) => {
       if (data.darkMode !== undefined) {
@@ -38,7 +42,7 @@ export const Popup = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('https://op-answers.vercel.app/generate_answer', {
+      const response = await fetch(apiUri, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
