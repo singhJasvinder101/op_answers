@@ -32,25 +32,44 @@
 #   })
 # )
 
+# def llama_response(question: str) -> str:
+#     try:
+#         llm = ChatGroq(
+#             model="llama-3.1-70b-versatile",
+#             temperature=0.95,
+#             api_key=llama_key
+#         )
+
+#         prompt = f"""
+#         Please analyze the question below and perform the following:
+#         - Identify if calculations are involved; if so, solve accurately and verify results.
+#         - Provide the answer in this format: Answer: [Correct Option] - [Option Name].
+#         - Also, return the level of the question in this format: Level: [Level].
+#         - For non-question input, respond appropriately.
+
+#         Example:
+#         Answer: A - Option Name
+
+#         Question: {question}
+#         """
+#         response = llm.invoke(prompt)
+#         return response.content.strip()
+#     except Exception as e:
+#         print(f"Error in llama_response: {e}")
+#         return "Error processing your question."
+
+
 
 # print(response.json())
 import os
 
-# Set the environment variable
 os.environ["GITHUB_TOKEN"] = "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"
 
-# Verify that the variable is set (optional)
 print(os.environ.get("GITHUB_TOKEN"))
 
-"""Run this model in Python
-
-> pip install openai
-"""
 import os
 from openai import OpenAI
 
-# To authenticate with the model you will need to generate a personal access token (PAT) in your GitHub settings.
-# Create your PAT token by following instructions here: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
 client = OpenAI(
     base_url="https://models.inference.ai.azure.com",
     api_key=os.environ["GITHUB_TOKEN"],
