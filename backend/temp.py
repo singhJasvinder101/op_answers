@@ -61,44 +61,80 @@
 
 
 # print(response.json())
-import os
+# import os
 
-os.environ["GITHUB_TOKEN"] = "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"
+# os.environ["GITHUB_TOKEN"] = "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"
 
-print(os.environ.get("GITHUB_TOKEN"))
+# print(os.environ.get("GITHUB_TOKEN"))
 
-import os
-from openai import OpenAI
+# import os
+# from openai import OpenAI
 
-client = OpenAI(
-    base_url="https://models.inference.ai.azure.com",
-    api_key=os.environ["GITHUB_TOKEN"],
-)
+# client = OpenAI(
+#     base_url="https://models.inference.ai.azure.com",
+#     api_key=os.environ["GITHUB_TOKEN"],
+# )
+
+# response = client.chat.completions.create(
+#     messages=[
+#         {
+#             "role": "system",
+#             "content": "",
+#         },
+#         {
+#             "role": "user",
+#             "content": """
+# Telnet is a ______ based computer protocol ?
+# Sound
+
+# Text
+
+# Image
+
+# Animation
+# """,
+#         }
+#     ],
+#     model="gpt-4o",
+#     temperature=1,
+#     max_tokens=4096,
+#     top_p=1
+# )
+
+# print(response.choices[0].message.content)
+
+
+
+from g4f.client import Client
+
+client = Client()
+prompt_template = f"""
+Please respond to the following input thoughtfully and empathetically:
+- If it is a question, analyze and solve it accurately.
+- If calculations are involved, solve and verify results.
+- For ambiguous inputs, provide helpful guidance or a clarifying question.
+- Incase you are not getting the question correctly or option ask the user to "scan or copy-paste the question again".
+- For non-questions, respond kindly and encouragingly to make the user feel supported.
+- Always be humble and polite in your response.
+
+Example for a question:
+Answer: A - Option Name
+Level: Easy
+
+Example for non-question:
+"Thank you for reaching out! How can I assist you further?"
+
+Input: hello
+"""
 
 response = client.chat.completions.create(
     messages=[
-        {
-            "role": "system",
-            "content": "",
-        },
-        {
-            "role": "user",
-            "content": """
-Telnet is a ______ based computer protocol ?
-Sound
-
-Text
-
-Image
-
-Animation
-""",
-        }
+        {"role": "system", "content": "You are a polite and helpful assistant."},
+        {"role": "user", "content": prompt_template}
     ],
     model="gpt-4o",
-    temperature=1,
+    temperature=0.9,
     max_tokens=4096,
     top_p=1
 )
-
 print(response.choices[0].message.content)
